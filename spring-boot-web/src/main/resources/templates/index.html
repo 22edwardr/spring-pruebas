@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title th:text="${titulo}"></title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+	<h1 class="color-rojo">Hola spring INDEX!</h1>
+	<h2 class="color-azul">Hola spring AZUL INDEX!</h2>
+	<img th:src="@{/images/spring.png}"></img>
+	<table th:if="${not usuarios.isEmpty()}">
+		<thead>
+			<th>Nombre</th>
+			<th>Apellido</th>
+			<th>Email</th>
+		</thead>
+		<tbody>
+			<tr th:each="usuario: ${usuarios}">
+				<td th:text="${usuario.nombre}"></td>
+				<td th:text="${usuario.apellido}"></td>
+				<td th:text="${usuario.email}"></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>
