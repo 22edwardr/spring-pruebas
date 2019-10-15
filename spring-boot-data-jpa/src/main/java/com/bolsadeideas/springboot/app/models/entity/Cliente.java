@@ -113,4 +113,9 @@ public class Cliente implements Serializable {
 		this.createAt = createAt;
 	}
 
+	@Override
+	public String toString() {
+		return nombre + " " + apellido;
+	}
+
 }

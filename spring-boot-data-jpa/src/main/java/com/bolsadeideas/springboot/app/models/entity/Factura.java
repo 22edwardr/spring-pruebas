@@ -20,6 +20,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "facturas")
@@ -28,6 +29,7 @@ public class Factura implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@NotEmpty
 	private String descripcion;
 	private String observacion;
 	@Temporal(TemporalType.DATE)
