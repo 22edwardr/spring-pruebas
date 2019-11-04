@@ -2,15 +2,23 @@ package com.bolsadeideas.springboot.app.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +41,8 @@ import com.bolsadeideas.springboot.app.models.service.IUploadFileService;
 @Qualifier("clienteDaoJPA")
 @SessionAttributes("cliente")
 public class ClienteController {
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@Autowired
 	private IClienteService clienteService;
@@ -67,7 +77,24 @@ public class ClienteController {
 	}
 
 	@GetMapping(value = {"/listar","/"})
-	public String listar(Model model) {
+	public String listar(Model model,Authentication authentication) {
+		
+		if(authentication != null) {
+			logger.info("Hola usuario autenticado, tu username es: ".concat(authentication.getName()));
+		}
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(auth != null) {
+			logger.info("Utilizando forma estatica SecurityContextHolder.getContext().getAuthentication(): Hola usuario autenticado, tu username es: ".concat(auth.getName()));
+		}
+		
+		if(hasRole("ROLE_ADMIN")) {
+			logger.info("Tienes acceso");
+		}else
+			logger.info("NO Tienes acceso");
+		
+		
 		model.addAttribute("titulo", "Listado de clientes");
 		model.addAttribute("clientes", clienteService.findAll());
 		return "listar";
@@ -148,6 +175,33 @@ public class ClienteController {
 		}
 
 		return "redirect:/listar";
+	}
+	
+	private boolean hasRole(String role) {
+		SecurityContext context = SecurityContextHolder.getContext();
+		
+		if(context == null) {
+			return false;
+		}
+		
+		Authentication auth = context.getAuthentication();
+		
+		if(auth == null) {
+			return false;
+		}
+		
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		
+		return authorities.contains(new SimpleGrantedAuthority(role));
+		/*for (GrantedAuthority grantedAuthority : authorities) {
+			if(role.equals(grantedAuthority.getAuthority())) {
+				logger.info("Hola usuario " +auth.getName()+ " tu role es: " +grantedAuthority.getAuthority());
+				return true;
+			}
+				
+		}
+		
+		return false;*/
 	}
 
 }

@@ -11,10 +11,14 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.bolsadeideas.springboot.app.auth.handler.LoginSuccessHandler;
+
 
 @Configuration
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
 	
+	@Autowired
+	private LoginSuccessHandler successHandler;
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/","/css/**","/js/**","/images/**","/listar").permitAll()
@@ -25,9 +29,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
 		.antMatchers("/factura/**").hasAnyRole("ADMIN")
 		.anyRequest().authenticated()
 		.and()
-		.formLogin().loginPage("/login").permitAll()
+		.formLogin().
+		successHandler(successHandler).
+		loginPage("/login").permitAll()
 		.and()
-		.logout().permitAll();
+		.logout().permitAll()
+		.and().exceptionHandling().accessDeniedPage("/error_403");
 	}
 
 	@Bean
