@@ -3,6 +3,7 @@
 <head th:replace="layout/layout :: head">
 </head>
 <body>
+	<div id="i18n_eliminar_cliente" th:text="#{text.cliente.eliminarOk}" style="display: none;"></div>
 
 	<header th:replace="layout/layout :: header"></header>
 	<div class="container py-4">
@@ -10,20 +11,20 @@
 			<div class="card-header" th:text="${titulo}"></div>
 			<div class="card-body">
 				<h4 class="card-title">
-					<a class="btn btn-primary btn-xs" sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/form}">Crear
+					<a class="btn btn-primary btn-xs" sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/form}" th:text="#{text.cliente.crear}">Crear
 						Cliente</a>
 				</h4>
 				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th sec:authorize="hasRole('ROLE_USER')">Id</th>
-							<th>Nombre</th>
-							<th>Apellido</th>
-							<th>Email</th>
-							<th>Fecha</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Crear Factura</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Editar</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Eliminar</th>
+							<th th:text="#{text.cliente.nombre}">Nombre</th>
+							<th th:text="#{text.cliente.apellido}">Apellido</th>
+							<th th:text="#{text.cliente.email}">Email</th>
+							<th th:text="#{text.cliente.createAt}">Fecha</th>
+							<th th:text="#{text.cliente.factura.crear}" sec:authorize="hasRole('ROLE_ADMIN')">Crear Factura</th>
+							<th th:text="#{text.cliente.editar}" sec:authorize="hasRole('ROLE_ADMIN')">Editar</th>
+							<th th:text="#{text.cliente.eliminar}" sec:authorize="hasRole('ROLE_ADMIN')">Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -34,12 +35,12 @@
 							<td th:text="${cliente.apellido}"></td>
 							<td th:text="${cliente.email}"></td>
 							<td th:text="${cliente.createAt}"></td>
-							<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-success btn-xs" th:href="@{'/factura/form/' + ${cliente.id}}" th:text="'Crear Factura'"></a></td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-success btn-xs" th:href="@{'/factura/form/' + ${cliente.id}}" th:text="#{text.cliente.factura.crear}"></a></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/form/} + ${cliente.id}"
-								th:text="'Editar'" class="btn btn-info btn-xs"></a></td>
+								th:text="#{text.cliente.editar}" class="btn btn-info btn-xs"></a></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/eliminar/} + ${cliente.id}"
-								th:text="'Eliminar'" class="btn btn-danger btn-xs"
-								onclick="return confirm('Eliminar?');"></a></td>
+								th:text="#{text.cliente.eliminar}" class="btn btn-danger btn-xs"
+								onclick="return confirm(document.getElementById('i18n_eliminar_cliente').innerHTML);">></a></td>
 						</tr>
 					</tbody>
 				</table>

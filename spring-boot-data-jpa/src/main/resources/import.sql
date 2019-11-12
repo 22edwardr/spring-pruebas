@@ -18,3 +18,13 @@ insert into facturas_items(cantidad, factura_id, producto_id) values (1,1,7);
 
 insert into facturas(descripcion, observacion, cliente_id, create_at) values ('Factura Bicicleta', 'Alguna nota importante', 1, now());
 insert into facturas_items(cantidad, factura_id, producto_id) values (3,2,6);
+
+INSERT INTO users (username, password, enabled) VALUES('andres', '$2a$10$C33v390RRes2c9Jpu6GD9.lgr3PMQr.UKD.4UJpQZKUoQkhSjWvHe', 1);
+INSERT INTO users (username, password, enabled) VALUES('admin', '$2a$10$bBTKl2wMnXDomTV1aYvDYOCLHrua.jnXvsaaZRVmzf5iMUOR5eVAK', 1);
+
+INSERT INTO authorities (user_id, authority) VALUES (1, 'ROLE_USER');
+INSERT INTO authorities (user_id, authority) VALUES (2, 'ROLE_ADMIN');
+INSERT INTO authorities (user_id, authority) VALUES (2, 'ROLE_USER');
+
+
+
