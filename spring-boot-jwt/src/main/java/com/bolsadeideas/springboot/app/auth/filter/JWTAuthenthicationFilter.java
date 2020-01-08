@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.bolsadeideas.springboot.app.auth.service.JWTService;
+import com.bolsadeideas.springboot.app.auth.service.JWTServiceImpl;
 import com.bolsadeideas.springboot.app.models.entity.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,10 +32,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JWTAuthenthicationFilter extends UsernamePasswordAuthenticationFilter {
 
 	private AuthenticationManager authenticationManager;
+	private JWTService jwtService;
 	
-	public JWTAuthenthicationFilter(AuthenticationManager authenticationManager) {
+	public JWTAuthenthicationFilter(AuthenticationManager authenticationManager,JWTService jwtService) {
 		this.authenticationManager = authenticationManager;
 		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/login/","POST"));
+		
+		this.jwtService= jwtService; 
 	}
 
 
@@ -75,27 +80,14 @@ public class JWTAuthenthicationFilter extends UsernamePasswordAuthenticationFilt
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		
-		String username = ((User) authResult.getPrincipal()).getUsername();
+		String token = jwtService.create(authResult);
 		
-		Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-		
-		Claims claims = Jwts.claims();
-		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
-		
-		String token = Jwts.builder()
-				.setClaims(claims)
-				.setSubject(username)
-				.signWith(SignatureAlgorithm.HS512, "Alguna.Clave.Secreta.123456".getBytes())
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 14000000L))
-				.compact();
-		
-		response.addHeader("Authorization", "Bearer " + token);
+		response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX + token);
 		
 		Map<String,Object> body = new HashMap<>();
 		body.put("token", token);
 		body.put("user", (User) authResult.getPrincipal());
-		body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!",username));
+		body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!", ((User) (authResult.getPrincipal())).getUsername()));
 		
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
 		response.setStatus(200);
